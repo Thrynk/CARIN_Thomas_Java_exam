@@ -12,19 +12,21 @@ public class MainController {
 
     private final TemperatureModel tempModel = new TemperatureModel();
 
+    private final GlaciersModel glaciersModel = new GlaciersModel();
+
     @FXML
     private LineChart temperatureChart;
 
     @FXML
-    private LineChart temperatureGCAGChart;
+    private LineChart glaciersChart;
 
     public MainController(){
 
         Charset charset = StandardCharsets.UTF_8;
         try{
             BufferedReader reader = Files.newBufferedReader(
-                    Paths.get("temperature.txt"),
-                    charset
+                Paths.get("temperature.txt"),
+                charset
             );
             String line = null;
             reader.readLine(); // skip first line
@@ -34,16 +36,28 @@ public class MainController {
                 Temperature temp = new Temperature(infos[0], infos[1], Double.parseDouble(infos[2]));
                 tempModel.add(temp);
             }
+
+            BufferedReader readerGlaciers = Files.newBufferedReader(
+                Paths.get("glaciers.txt"),
+                charset
+            );
+
+            readerGlaciers.readLine();
+            while((line = readerGlaciers.readLine()) != null){
+                String[] infos = line.split(",");
+                glaciersModel.add(infos[0], Double.parseDouble(infos[1]));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void initialize(){
-        temperatureChart.setTitle("GISTEMP Temperature");
+        temperatureChart.setTitle("Temperature");
         temperatureChart.getData().add(tempModel.getTemperatureEvolutionData("GISTEMP"));
+        temperatureChart.getData().add(tempModel.getTemperatureEvolutionData("GCAG"));
 
-        temperatureGCAGChart.setTitle("GCAC Temperature");
-        temperatureGCAGChart.getData().add(tempModel.getTemperatureEvolutionData("GCAG"));
+        glaciersChart.setTitle("Glaciers");
+        glaciersChart.getData().add(glaciersModel.getData());
     }
 }

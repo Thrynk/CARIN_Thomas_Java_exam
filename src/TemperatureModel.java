@@ -17,6 +17,7 @@ public class TemperatureModel {
                 serie.getData().add(new XYChart.Data<>(temperatures.get(i).getDate(), temperatures.get(i).getRaise()));
             }
         }
+        serie.setName(type);
         return serie;
     }
 }
